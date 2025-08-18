@@ -1,0 +1,15 @@
+keyword (int, real, if, then, else, while, for, do, true, false, break, continue)
+
+identifier
+
+const_integer const_real
+
+; ( ) [ ] { }
+
+=
+
++ - * /
+
+&& || !
+
+relop (==, !=, >, <, >=, <=)

@@ -1,0 +1,99 @@
+变量声明
+D -> T id ; {enter(id.lexeme, T.type, offset); offset += T.width;}
+T -> B {t = B.type; w = B.width;} C {T.type = C.type; T.width = C.width;}
+B -> int {B.type = int; B.width = 4;}
+B -> real {B.type = real; B.width = 8;}
+C -> [ num ] C1 {C.type = array(num, C1.type); C.width = num * C1.width;}
+C -> \0 {C.type = t; C.width = w;}
+
+赋值语句
+A -> id = E ; {p = lookup(id.lexeme); if (p == nil) error; gen(p '=' E.addr_syn);}
+A -> L = E ; {gen(L.array '[' L.offset ']' '=' E.addr_syn);}
+/* *
+ * E -> E + T | E - T | T
+ * T -> T * F | T / F | F
+ * F -> ( E ) | - E | const_integer | const_real | id | L
+ */
+E -> T {E'.addr_inh = T.addr_syn;} E' {E.addr_syn = E'.addr_syn;}
+E' -> + T {E'1.addr_inh = new_temp(); gen(E'1.addr_inh '=' E'.addr_inh '+' T.addr_syn);}
+      E'1 {E'.addr_syn = E'1.addr_syn;}
+E' -> - T {E'1.addr_inh = new_temp(); gen(E'1.addr_inh '=' E'.addr_inh '-' T.addr_syn);}
+      E'1 {E'.addr_syn = E'1.addr_syn;}
+E' -> \0 {E'.addr_syn = E'.addr_inh;}
+T -> F {T'.addr_inh = F.addr_syn;} T' {T.addr_syn = T'.addr_syn;}
+T' -> * F {T'1.addr_inh = new_temp(); gen(T'1.addr_inh '=' T'.addr_inh '*' F.addr_syn);}
+      T'1 {T'.addr_syn = T'1.addr_syn;}
+T' -> / F {T'1.addr_inh = new_temp(); gen(T'1.addr_inh '=' T'.addr_inh '/' F.addr_syn);}
+      T'1 {T'.addr_syn = T'1.addr_syn;}
+T' -> \0 {T'.addr_syn = T'.addr_inh;}
+F -> ( E ) {F.addr_syn = E.addr_syn;}
+F -> - ( E ) {F.addr_syn = new_temp(); gen(F.addr_syn '=' 'minus' E.addr_syn);}
+F -> - T {F.addr_syn = new_temp(); gen(F.addr_syn '=' 'minus' T.addr_syn);}
+F -> const_integer {F.addr_syn = const_integer.lex_val;}
+F -> const_real {F.addr_syn = const_real.lex_val;}
+F -> id {p = lookup(id.lexeme); if (p == nil) error; F.addr_syn = p;}
+F -> L {F.addr_syn = new_temp(); gen(F.addr_syn '=' L.array '[' L.offset ']');}
+// L -> L [ E ] | id [ E ]
+L -> id [ E ] {p = lookup(id.lexeme); if (p == nil) error; L'.type = id.type.elem;} L'
+     {L.array = p; t = new_temp(); gen(t '=' E.addr_syn '*' L'.type.width);
+     L.offset = new_temp(); gen(L.offset '=' t '+' L'.offset);}
+L' -> [ E ] {L'1.type = L'.type.elem;}
+      L'1 {t = new_temp(); gen(t '=' E.addr_syn '*' L'1.type.width);
+           L'.offset = new_temp(); gen(L'.offset '=' t '+' L'1.offset);}
+L' -> \0 {L'.offset = 0;}
+
+布尔表达式
+/* *
+ * B -> B || A
+ * B -> A
+ * A -> A && O
+ * A -> O
+ * O -> ( B )
+ * O -> ! ( B )
+ * O -> ! O
+ * O -> true
+ * O -> false
+ * O -> E relop E
+ */
+B -> {A.true = B.true; A.false = new_label();} A {label(A.false);
+     B'.true = B.true; B'.false = B.false;} B'
+B' -> || {A.true = B'.true; A.false = new_label();} A {label(A.false);
+      B'1.true = B'.true; B'1.false = B'.false;} B'1
+B' -> \0 {gen('goto' B'.false);}
+A -> {O.true = new_label(); O.false = A.false;} O {label(O.true);
+     A'.true = A.true; A'.false = A.false;} A'
+A' -> && {O.true = new_label(); O.false = A'.false;} O {label(O.true);
+      A'1.true = A'.true; A'1.false = A'.false;} A'1
+A' -> \0 {gen('goto' A'.true);}
+O -> ( {B.true = O.true; B.false = O.false;} B )
+O -> ! ( {B.true = O.false; B.false = O.true;} B )
+O -> ! {O1.true = O.false; O1.false = O.true;} O1
+O -> true {gen('goto' O.true);}
+O -> false {gen('goto' O.false);}
+O -> E1 relop E2 {gen('if' E1.addr_syn relop E2.addr_syn 'goto' O.true);
+     gen('goto' O.false);} // E1和E2不允许带有括号
+
+控制流语句
+Stmts -> S Stmts
+Stmts -> \0
+
+S -> D
+S -> A
+S -> {If.next = new_label();} If {label(If.next);}
+S -> {While.next = new_label();} While {label(While.next);}
+S -> {For.next = new_label();} For {label(For.next);}
+S -> '{' {enter_block();} Stmts '}' {exit_block();}
+S -> break ;
+S -> continue ;
+
+If -> if {B.true = new_label(); B.false = new_label();} B then {label(B.true); enter_block();}
+      S {exit_block(); label(B.false);}
+If -> if {B.true = new_label(); B.false = new_label();} B then {label(B.true); enter_block();}
+      S1 {exit_block(); gen('goto' If.next);} else {label(B.false); enter_block();} S2 {exit_block();}
+While -> while {While.begin = new_label(); label(While.begin);
+         B.true = new_label(); B.false = While.next;} B do
+         {label(B.true); enter_block();} S {exit_block(); gen('goto' While.begin);}
+For -> for ( S1 ; {B.true = new_label(); B.false = For.next; S2.next = new_label();
+       label(S2.next);} B ; {S3.next = new_label(); label(S3.next);}
+       S2 {gen('goto' S2.next);} ) {label(B.true); enter_block();}
+       S3 {exit_block(); gen('goto' S3.next);} // 要求S1和S2只能是不带分号的赋值语句
