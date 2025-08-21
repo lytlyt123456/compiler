@@ -144,7 +144,7 @@ public class IROptimizer {
         }
     }
 
-    public boolean eliminateConstantTemp(IR ir) { // 消除值为常量的临时变量赋值语句
+    public boolean eliminateConstantTemp(IR ir) { // 消除形如 "t1 = {const_num}" "t1 = t2" 临时变量赋值语句
         IR.Address arg = ir.getArg1();
         IR.TempAddress result = (IR.TempAddress)ir.getResult();
         if (arg instanceof IR.ConstInteger || arg instanceof IR.ConstReal) {
@@ -157,6 +157,11 @@ public class IROptimizer {
             if (constantValueTemp.containsKey(tempNum)) {
                 IR.Address v = constantValueTemp.get(tempNum);
                 constantValueTemp.put(result.getTempNum(), v);
+                code.set(ir.getSeqNum(), null);
+                return true;
+            }
+            else {
+                constantValueTemp.put(result.getTempNum(), arg);
                 code.set(ir.getSeqNum(), null);
                 return true;
             }
