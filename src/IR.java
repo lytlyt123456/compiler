@@ -102,9 +102,21 @@ public class IR { // Intermediate Representation
     public Address getResult() { return result; }
 
     // op
-    public static int ASSIGN = 0, MINUS = 1, PLUS = 2, SUBTRACT = 3, MULTIPLY = 4, DIVIDE = 5,
+    public static final int ASSIGN = 0, MINUS = 1, PLUS = 2, SUBTRACT = 3, MULTIPLY = 4, DIVIDE = 5,
             JUMP = 6, JUMP_EQUAL = 7, JUMP_NE = 8, JUMP_GT = 9, JUMP_GE = 10,
             JUMP_LT = 11, JUMP_LE = 12;
+
+    public static int oppositeOperation(int op) {
+        switch (op) {
+            case JUMP_EQUAL: return JUMP_NE;
+            case JUMP_NE: return JUMP_EQUAL;
+            case JUMP_GT: return JUMP_LE;
+            case JUMP_GE: return JUMP_LT;
+            case JUMP_LT: return JUMP_GE;
+            case JUMP_LE: return JUMP_GT;
+            default: return -1;
+        }
+    }
 
     @Override
     public String toString() {
@@ -128,7 +140,7 @@ public class IR { // Intermediate Representation
             code.append("if ").append(arg1.toString()).append(" == ").append(arg2.toString())
                     .append(" goto ").append(result.toString());
         else if (op == JUMP_NE)
-            code.append("if ").append(arg1.toString()).append(" ！= ").append(arg2.toString())
+            code.append("if ").append(arg1.toString()).append(" != ").append(arg2.toString())
                     .append(" goto ").append(result.toString());
         else if (op == JUMP_GT)
             code.append("if ").append(arg1.toString()).append(" > ").append(arg2.toString())
