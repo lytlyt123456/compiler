@@ -17,61 +17,51 @@
 16:		arr1 [ t9 ] = 10
 17:		arr3 [ 248 ] = 1.1
 18:		i = 1
-19:		if i <= 10 goto 21
-20:		goto 47
-21:		j = 1
-22:		if j <= i goto 27
-23:		goto 30
-24:		t10 = j + 1
-25:		j = t10
-26:		goto 22
-27:		t11 = i1 + 4
-28:		i1 = t11
-29:		goto 24
-30:		if i1 > 1 goto 32
-31:		goto 34
-32:		if i2 < 10 goto 43
-33:		goto 34
-34:		if i3 > 9 goto 36
-35:		goto 38
-36:		if r1 == 1.0 goto 43
-37:		goto 38
-38:		if i3 == 3 goto 40
-39:		goto 43
-40:		t12 = minus 1
-41:		i1 = t12
-42:		goto 44
-43:		i1 = 5
-44:		t13 = i + 1
-45:		i = t13
-46:		goto 19
-47:		t14 = 2 * i3
-48:		t15 = t14 / i2
-49:		t16 = t15 - 5
-50:		t17 = t16 + 4
-51:		t18 = 2 / t17
-52:		t19 = arr1 [ 812 ]
-53:		t20 = t18 * t19
-54:		i = t20
-55:		iii = 1
-56:		if iii <= 10 goto 58
-57:		goto 63
-58:		if iii == 5 goto 63
-59:		goto 60
-60:		t21 = iii + 1
-61:		iii = t21
-62:		goto 56
-63:		jjj = 1
-64:		if jjj <= 10 goto 69
-65:		goto 76
-66:		t22 = jjj + 1
-67:		jjj = t22
-68:		goto 64
-69:		if jjj == 6 goto 76
-70:		goto 71
-71:		if jjj == 7 goto 66
-72:		goto 73
-73:		t23 = jjj * 4
-74:		arr10 [ t23 ] = 0
-75:		goto 66
-76:
+19:		if i > 10 goto 41
+20:		j = 1
+21:		if j <= i goto 26
+22:		goto 29
+23:		t10 = j + 1
+24:		j = t10
+25:		goto 21
+26:		t11 = i1 + 4
+27:		i1 = t11
+28:		goto 23
+29:		if i1 <= 1 goto 31
+30:		if i2 < 10 goto 37
+31:		if i3 <= 9 goto 33
+32:		if r1 == 1.0 goto 37
+33:		if i3 != 3 goto 37
+34:		t12 = minus 1
+35:		i1 = t12
+36:		goto 38
+37:		i1 = 5
+38:		t13 = i + 1
+39:		i = t13
+40:		goto 19
+41:		t14 = 2 * i3
+42:		t15 = t14 / i2
+43:		t16 = t15 - 5
+44:		t17 = t16 + 4
+45:		t18 = 2 / t17
+46:		t19 = arr1 [ 812 ]
+47:		t20 = t18 * t19
+48:		i = t20
+49:		iii = 1
+50:		if iii > 10 goto 55
+51:		if iii == 5 goto 55
+52:		t21 = iii + 1
+53:		iii = t21
+54:		goto 50
+55:		jjj = 1
+56:		if jjj <= 10 goto 61
+57:		goto 66
+58:		t22 = jjj + 1
+59:		jjj = t22
+60:		goto 56
+61:		if jjj == 6 goto 66
+62:		if jjj == 7 goto 58
+63:		t23 = jjj * 4
+64:		arr10 [ t23 ] = 0
+65:		goto 58
+66:
