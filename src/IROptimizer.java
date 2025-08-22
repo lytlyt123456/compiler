@@ -290,7 +290,8 @@ public class IROptimizer {
         }
     }
 
-    public void eliminateGoto() {
+    public void eliminateGoto() { // 消除冗余跳转指令
+        // 消除非条件跳转指令后的冗余非条件跳转指令
         HashMap<Integer, Integer> mp = new HashMap<>();
         for (int i = code.size() - 1; i >= 1; --i) {
             IR ir = code.get(i);
@@ -309,6 +310,25 @@ public class IROptimizer {
                 IR.InstructionAddress newResult = new IR.InstructionAddress(target);
                 IR newIR = new IR(i, ir.getOp(), ir.getArg1(), ir.getArg2(), newResult);
                 code.set(i, newIR);
+            }
+        }
+        eliminateNull();
+        // 消除条件跳转指令后的冗余非条件跳转指令
+        for (int i = 0; i <= code.size() - 2; ++i) {
+            IR ir = code.get(i);
+            if (ir == null) continue;
+            if (ir.getOp() >= 7 && ir.getOp() <= 12) { // ir是条件跳转指令
+                IR ir_next = code.get(i + 1);
+                int target_satisfied = ((IR.InstructionAddress)ir.getResult()).getNum();
+                int target_unsatisfied = ((IR.InstructionAddress)ir_next.getResult()).getNum();
+                if (target_satisfied == ir.getSeqNum() + 2) {
+                    IR newIR = new IR(ir.getSeqNum(), IR.oppositeOperation(ir.getOp()),
+                            ir.getArg1(), ir.getArg2(), ir_next.getResult());
+                    code.set(i, newIR);
+                    code.set(i + 1, null);
+                }
+                else if (target_unsatisfied == ir.getSeqNum() + 2)
+                    code.set(i + 1, null);
             }
         }
     }
