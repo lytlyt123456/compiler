@@ -1,5 +1,6 @@
-public class SyntaxError extends Error{
+public class SyntaxError extends Error {
     public SyntaxError(String message) {
         super(message);
     }
 }
+
