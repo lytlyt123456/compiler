@@ -122,37 +122,52 @@ public class IR { // Intermediate Representation
     public String toString() {
         StringBuilder code = new StringBuilder();
         code.append(seqNum).append(":\t\t");
-        if (op == ASSIGN)
-            code.append(result.toString()).append(" = ").append(arg1.toString());
-        else if (op == MINUS)
-            code.append(result.toString()).append(" = minus ").append(arg1.toString());
-        else if (op == PLUS)
-            code.append(result.toString()).append(" = ").append(arg1.toString()).append(" + ").append(arg2.toString());
-        else if (op == SUBTRACT)
-            code.append(result.toString()).append(" = ").append(arg1.toString()).append(" - ").append(arg2.toString());
-        else if (op == MULTIPLY)
-            code.append(result.toString()).append(" = ").append(arg1.toString()).append(" * ").append(arg2.toString());
-        else if (op == DIVIDE)
-            code.append(result.toString()).append(" = ").append(arg1.toString()).append(" / ").append(arg2.toString());
-        else if (op == JUMP)
-            code.append("goto ").append(result.toString());
-        else if (op == JUMP_EQUAL)
-            code.append("if ").append(arg1.toString()).append(" == ").append(arg2.toString())
-                    .append(" goto ").append(result.toString());
-        else if (op == JUMP_NE)
-            code.append("if ").append(arg1.toString()).append(" != ").append(arg2.toString())
-                    .append(" goto ").append(result.toString());
-        else if (op == JUMP_GT)
-            code.append("if ").append(arg1.toString()).append(" > ").append(arg2.toString())
-                    .append(" goto ").append(result.toString());
-        else if (op == JUMP_GE)
-            code.append("if ").append(arg1.toString()).append(" >= ").append(arg2.toString())
-                    .append(" goto ").append(result.toString());
-        else if (op == JUMP_LT)
-            code.append("if ").append(arg1.toString()).append(" < ").append(arg2.toString())
-                    .append(" goto ").append(result.toString());
-        else code.append("if ").append(arg1.toString()).append(" <= ").append(arg2.toString())
-                    .append(" goto ").append(result.toString());
+        switch (op) {
+            case ASSIGN:
+                code.append(result.toString()).append(" = ").append(arg1.toString());
+                break;
+            case MINUS:
+                code.append(result.toString()).append(" = minus ").append(arg1.toString());
+                break;
+            case PLUS:
+                code.append(result.toString()).append(" = ").append(arg1.toString()).append(" + ").append(arg2.toString());
+                break;
+            case SUBTRACT:
+                code.append(result.toString()).append(" = ").append(arg1.toString()).append(" - ").append(arg2.toString());
+                break;
+            case MULTIPLY:
+                code.append(result.toString()).append(" = ").append(arg1.toString()).append(" * ").append(arg2.toString());
+                break;
+            case DIVIDE:
+                code.append(result.toString()).append(" = ").append(arg1.toString()).append(" / ").append(arg2.toString());
+                break;
+            case JUMP:
+                code.append("goto ").append(result.toString());
+                break;
+            case JUMP_EQUAL:
+                code.append("if ").append(arg1.toString()).append(" == ").append(arg2.toString())
+                        .append(" goto ").append(result.toString());
+                break;
+            case JUMP_NE:
+                code.append("if ").append(arg1.toString()).append(" != ").append(arg2.toString())
+                        .append(" goto ").append(result.toString());
+                break;
+            case JUMP_GT:
+                code.append("if ").append(arg1.toString()).append(" > ").append(arg2.toString())
+                        .append(" goto ").append(result.toString());
+                break;
+            case JUMP_GE:
+                code.append("if ").append(arg1.toString()).append(" >= ").append(arg2.toString())
+                        .append(" goto ").append(result.toString());
+                break;
+            case JUMP_LT:
+                code.append("if ").append(arg1.toString()).append(" < ").append(arg2.toString())
+                        .append(" goto ").append(result.toString());
+                break;
+            case JUMP_LE:
+                code.append("if ").append(arg1.toString()).append(" <= ").append(arg2.toString())
+                        .append(" goto ").append(result.toString());
+        }
         return code.toString();
     }
 }
