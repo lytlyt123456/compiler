@@ -64,17 +64,12 @@ public class Lexer {
                     continue;
                 int k = 0;
                 while (k < target.length()) {
-                    if (target.charAt(k) == ';'
-                    || target.charAt(k) == '('
-                    || target.charAt(k) == ')'
-                    || target.charAt(k) == '['
-                    || target.charAt(k) == ']'
-                    || target.charAt(k) == '{'
-                    || target.charAt(k) == '}'
-                    || target.charAt(k) == '+'
-                    || target.charAt(k) == '-'
-                    || target.charAt(k) == '*'
-                    || target.charAt(k) == '/') {
+                    if (target.charAt(k) == ';' || target.charAt(k) == '('
+                            || target.charAt(k) == ')' || target.charAt(k) == '['
+                            || target.charAt(k) == ']' || target.charAt(k) == '{'
+                            || target.charAt(k) == '}' || target.charAt(k) == '+'
+                            || target.charAt(k) == '-' || target.charAt(k) == '*'
+                            || target.charAt(k) == '/') {
                         tokens.add(new Token(target.charAt(k), "", line));
                         ++k;
                     }
@@ -156,8 +151,8 @@ public class Lexer {
                         k = k1;
                     }
                     else if (target.charAt(k) >= 'a' && target.charAt(k) <= 'z'
-                    || target.charAt(k) >= 'A' && target.charAt(k) <= 'Z'
-                    || target.charAt(k) == '_') {
+                            || target.charAt(k) >= 'A' && target.charAt(k) <= 'Z'
+                            || target.charAt(k) == '_') {
                         StringBuilder word = new StringBuilder();
                         word.append(target.charAt(k));
                         int k1 = k + 1;
@@ -170,31 +165,21 @@ public class Lexer {
                             ++k1;
                         }
                         String s = word.toString();
-                        if (s.equals("int"))
-                            tokens.add(new Token('i', "", line));
-                        else if (s.equals("real"))
-                            tokens.add(new Token('r', "", line));
-                        else if (s.equals("if"))
-                            tokens.add(new Token(Token.IF, "", line));
-                        else if (s.equals("then"))
-                            tokens.add(new Token(Token.THEN, "", line));
-                        else if (s.equals("else"))
-                            tokens.add(new Token(Token.ELSE, "", line));
-                        else if (s.equals("while"))
-                            tokens.add(new Token(Token.WHILE, "", line));
-                        else if (s.equals("for"))
-                            tokens.add(new Token(Token.FOR, "", line));
-                        else if (s.equals("do"))
-                            tokens.add(new Token(Token.DO, "", line));
-                        else if (s.equals("true"))
-                            tokens.add(new Token(Token.TRUE, "", line));
-                        else if (s.equals("false"))
-                            tokens.add(new Token(Token.FALSE, "", line));
-                        else if (s.equals("break"))
-                            tokens.add(new Token(Token.BREAK, "", line));
-                        else if (s.equals("continue"))
-                            tokens.add(new Token(Token.CONTINUE, "", line));
-                        else tokens.add(new Token('d', s, line));
+                        switch (s) {
+                            case "int" -> tokens.add(new Token('i', "", line));
+                            case "real" -> tokens.add(new Token('r', "", line));
+                            case "if" -> tokens.add(new Token(Token.IF, "", line));
+                            case "then" -> tokens.add(new Token(Token.THEN, "", line));
+                            case "else" -> tokens.add(new Token(Token.ELSE, "", line));
+                            case "while" -> tokens.add(new Token(Token.WHILE, "", line));
+                            case "for" -> tokens.add(new Token(Token.FOR, "", line));
+                            case "do" -> tokens.add(new Token(Token.DO, "", line));
+                            case "true" -> tokens.add(new Token(Token.TRUE, "", line));
+                            case "false" -> tokens.add(new Token(Token.FALSE, "", line));
+                            case "break" -> tokens.add(new Token(Token.BREAK, "", line));
+                            case "continue" -> tokens.add(new Token(Token.CONTINUE, "", line));
+                            default -> tokens.add(new Token('d', s, line));
+                        }
                         k = k1;
                     }
                     else throw new LexicalError("Lexical error in line " + line + ".");
