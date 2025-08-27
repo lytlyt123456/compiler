@@ -3,4 +3,3 @@ public class SyntaxError extends Error {
         super(message);
     }
 }
-
