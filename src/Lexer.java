@@ -50,141 +50,138 @@ public class Lexer {
             }
         }
 
-        String[] sourceCodes = sourceCode.split("\n");
-
-        int line = 0;
-        for (int i = 0; i < sourceCodes.length; i++) {
-            ++line;
-            if (sourceCodes[i].length() == 0)
+        int line = 1;
+        int k = 0;
+        while (k < sourceCode.length()) {
+            if (sourceCode.charAt(k) == ' ' || sourceCode.charAt(k) == '\t'
+                    || sourceCode.charAt(k) == '\r') {
+                ++k;
                 continue;
-            String[] singleLineCodes = sourceCodes[i].split("[ \t]");
-            for (int j = 0; j < singleLineCodes.length; ++j) {
-                String target = singleLineCodes[j];
-                if (target.length() == 0)
-                    continue;
-                int k = 0;
-                while (k < target.length()) {
-                    if (target.charAt(k) == ';' || target.charAt(k) == '('
-                            || target.charAt(k) == ')' || target.charAt(k) == '['
-                            || target.charAt(k) == ']' || target.charAt(k) == '{'
-                            || target.charAt(k) == '}' || target.charAt(k) == '+'
-                            || target.charAt(k) == '-' || target.charAt(k) == '*'
-                            || target.charAt(k) == '/') {
-                        tokens.add(new Token(target.charAt(k), "", line));
-                        ++k;
-                    }
-                    else if (target.charAt(k) == '=') {
-                        if (k + 1 < target.length() && target.charAt(k + 1) == '=') {
-                            tokens.add(new Token(Token.RELOP, "==", line));
-                            k += 2;
-                        }
-                        else {
-                            tokens.add(new Token('=', "", line));
-                            ++k;
-                        }
-                    }
-                    else if (target.charAt(k) == '!') {
-                        if (k + 1 < target.length() && target.charAt(k + 1) == '=') {
-                            tokens.add(new Token(Token.RELOP, "!=", line));
-                            k += 2;
-                        }
-                        else {
-                            tokens.add(new Token('!', "", line));
-                            k++;
-                        }
-                    }
-                    else if (target.charAt(k) == '>') {
-                        if (k + 1 < target.length() && target.charAt(k + 1) == '=') {
-                            tokens.add(new Token(Token.RELOP, ">=", line));
-                            k += 2;
-                        }
-                        else {
-                            tokens.add(new Token(Token.RELOP, ">", line));
-                            k++;
-                        }
-                    }
-                    else if (target.charAt(k) == '<') {
-                        if (k + 1 < target.length() && target.charAt(k + 1) == '=') {
-                            tokens.add(new Token(Token.RELOP, "<=", line));
-                            k += 2;
-                        }
-                        else {
-                            tokens.add(new Token(Token.RELOP, "<", line));
-                            k++;
-                        }
-                    }
-                    else if (target.charAt(k) == '&') {
-                        if (k + 1 < target.length() && target.charAt(k + 1) == '&') {
-                            tokens.add(new Token('&', "", line));
-                            k += 2;
-                        }
-                        else throw new LexicalError("\"&&\" is not matched in line" + line);
-                    }
-                    else if (target.charAt(k) == '|') {
-                        if (k + 1 < target.length() && target.charAt(k + 1) == '|') {
-                            tokens.add(new Token('|', "", line));
-                            k += 2;
-                        }
-                        else throw new LexicalError("\"||\" is not matched in line" + line);
-                    }
-                    else if (target.charAt(k) >= '0' && target.charAt(k) <= '9') {
-                        boolean isInteger = true;
-                        StringBuilder num = new StringBuilder();
-                        num.append(target.charAt(k));
-                        int k1 = k + 1;
-                        while (k1 < target.length() && target.charAt(k1) >= '0' && target.charAt(k1) <= '9') {
-                            num.append(target.charAt(k1));
-                            ++k1;
-                        }
-                        if (k1 < target.length() && target.charAt(k1) == '.') {
-                            num.append('.');
-                            isInteger = false;
-                            ++k1;
-                        }
-                        while (k1 < target.length() && target.charAt(k1) >= '0' && target.charAt(k1) <= '9') {
-                            num.append(target.charAt(k1));
-                            ++k1;
-                        }
-                        if (isInteger)
-                            tokens.add(new Token(Token.CONST_INT, num.toString(), line));
-                        else tokens.add(new Token(Token.CONST_REAL, num.toString(), line));
-                        k = k1;
-                    }
-                    else if (target.charAt(k) >= 'a' && target.charAt(k) <= 'z'
-                            || target.charAt(k) >= 'A' && target.charAt(k) <= 'Z'
-                            || target.charAt(k) == '_') {
-                        StringBuilder word = new StringBuilder();
-                        word.append(target.charAt(k));
-                        int k1 = k + 1;
-                        while (k1 < target.length() &&
-                                (target.charAt(k1) >= 'a' && target.charAt(k1) <= 'z'
-                                || target.charAt(k1) >= 'A' && target.charAt(k1) <= 'Z'
-                                || target.charAt(k1) >= '0' && target.charAt(k1) <= '9'
-                                || target.charAt(k1) == '_')) {
-                            word.append(target.charAt(k1));
-                            ++k1;
-                        }
-                        String s = word.toString();
-                        switch (s) {
-                            case "int" -> tokens.add(new Token('i', "", line));
-                            case "real" -> tokens.add(new Token('r', "", line));
-                            case "if" -> tokens.add(new Token(Token.IF, "", line));
-                            case "then" -> tokens.add(new Token(Token.THEN, "", line));
-                            case "else" -> tokens.add(new Token(Token.ELSE, "", line));
-                            case "while" -> tokens.add(new Token(Token.WHILE, "", line));
-                            case "for" -> tokens.add(new Token(Token.FOR, "", line));
-                            case "do" -> tokens.add(new Token(Token.DO, "", line));
-                            case "true" -> tokens.add(new Token(Token.TRUE, "", line));
-                            case "false" -> tokens.add(new Token(Token.FALSE, "", line));
-                            case "break" -> tokens.add(new Token(Token.BREAK, "", line));
-                            case "continue" -> tokens.add(new Token(Token.CONTINUE, "", line));
-                            default -> tokens.add(new Token('d', s, line));
-                        }
-                        k = k1;
-                    }
-                    else throw new LexicalError("Lexical error in line " + line + ".");
+            }
+            else if (sourceCode.charAt(k) == '\n') {
+                ++k;
+                ++line;
+                continue;
+            }
+            else if (sourceCode.charAt(k) == ';' || sourceCode.charAt(k) == '('
+                    || sourceCode.charAt(k) == ')' || sourceCode.charAt(k) == '['
+                    || sourceCode.charAt(k) == ']' || sourceCode.charAt(k) == '{'
+                    || sourceCode.charAt(k) == '}' || sourceCode.charAt(k) == '+'
+                    || sourceCode.charAt(k) == '-' || sourceCode.charAt(k) == '*'
+                    || sourceCode.charAt(k) == '/') {
+                tokens.add(new Token(sourceCode.charAt(k), "", line));
+                ++k;
+            }
+            else if (sourceCode.charAt(k) == '=') {
+                if (k + 1 < sourceCode.length() && sourceCode.charAt(k + 1) == '=') {
+                    tokens.add(new Token(Token.RELOP, "==", line));
+                    k += 2;
+                }
+                else {
+                    tokens.add(new Token('=', "", line));
+                    ++k;
                 }
             }
+            else if (sourceCode.charAt(k) == '!') {
+                if (k + 1 < sourceCode.length() && sourceCode.charAt(k + 1) == '=') {
+                    tokens.add(new Token(Token.RELOP, "!=", line));
+                    k += 2;
+                }
+                else {
+                    tokens.add(new Token('!', "", line));
+                    k++;
+                }
+            }
+            else if (sourceCode.charAt(k) == '>') {
+                if (k + 1 < sourceCode.length() && sourceCode.charAt(k + 1) == '=') {
+                    tokens.add(new Token(Token.RELOP, ">=", line));
+                    k += 2;
+                }
+                else {
+                    tokens.add(new Token(Token.RELOP, ">", line));
+                    k++;
+                }
+            }
+            else if (sourceCode.charAt(k) == '<') {
+                if (k + 1 < sourceCode.length() && sourceCode.charAt(k + 1) == '=') {
+                    tokens.add(new Token(Token.RELOP, "<=", line));
+                    k += 2;
+                }
+                else {
+                    tokens.add(new Token(Token.RELOP, "<", line));
+                    k++;
+                }
+            }
+            else if (sourceCode.charAt(k) == '&') {
+                if (k + 1 < sourceCode.length() && sourceCode.charAt(k + 1) == '&') {
+                    tokens.add(new Token('&', "", line));
+                    k += 2;
+                }
+                else throw new LexicalError("\"&&\" is not matched in line" + line);
+            }
+            else if (sourceCode.charAt(k) == '|') {
+                if (k + 1 < sourceCode.length() && sourceCode.charAt(k + 1) == '|') {
+                    tokens.add(new Token('|', "", line));
+                    k += 2;
+                }
+                else throw new LexicalError("\"||\" is not matched in line" + line);
+            }
+            else if (sourceCode.charAt(k) >= '0' && sourceCode.charAt(k) <= '9') {
+                boolean isInteger = true;
+                StringBuilder num = new StringBuilder();
+                num.append(sourceCode.charAt(k));
+                int k1 = k + 1;
+                while (k1 < sourceCode.length() && sourceCode.charAt(k1) >= '0' && sourceCode.charAt(k1) <= '9') {
+                    num.append(sourceCode.charAt(k1));
+                    ++k1;
+                }
+                if (k1 < sourceCode.length() && sourceCode.charAt(k1) == '.') {
+                    num.append('.');
+                    isInteger = false;
+                    ++k1;
+                }
+                while (k1 < sourceCode.length() && sourceCode.charAt(k1) >= '0' && sourceCode.charAt(k1) <= '9') {
+                    num.append(sourceCode.charAt(k1));
+                    ++k1;
+                }
+                if (isInteger)
+                    tokens.add(new Token(Token.CONST_INT, num.toString(), line));
+                else tokens.add(new Token(Token.CONST_REAL, num.toString(), line));
+                k = k1;
+            }
+            else if (sourceCode.charAt(k) >= 'a' && sourceCode.charAt(k) <= 'z'
+                    || sourceCode.charAt(k) >= 'A' && sourceCode.charAt(k) <= 'Z'
+                    || sourceCode.charAt(k) == '_') {
+                StringBuilder word = new StringBuilder();
+                word.append(sourceCode.charAt(k));
+                int k1 = k + 1;
+                while (k1 < sourceCode.length() &&
+                        (sourceCode.charAt(k1) >= 'a' && sourceCode.charAt(k1) <= 'z'
+                                || sourceCode.charAt(k1) >= 'A' && sourceCode.charAt(k1) <= 'Z'
+                                || sourceCode.charAt(k1) >= '0' && sourceCode.charAt(k1) <= '9'
+                                || sourceCode.charAt(k1) == '_')) {
+                    word.append(sourceCode.charAt(k1));
+                    ++k1;
+                }
+                String s = word.toString();
+                switch (s) {
+                    case "int" -> tokens.add(new Token('i', "", line));
+                    case "real" -> tokens.add(new Token('r', "", line));
+                    case "if" -> tokens.add(new Token(Token.IF, "", line));
+                    case "then" -> tokens.add(new Token(Token.THEN, "", line));
+                    case "else" -> tokens.add(new Token(Token.ELSE, "", line));
+                    case "while" -> tokens.add(new Token(Token.WHILE, "", line));
+                    case "for" -> tokens.add(new Token(Token.FOR, "", line));
+                    case "do" -> tokens.add(new Token(Token.DO, "", line));
+                    case "true" -> tokens.add(new Token(Token.TRUE, "", line));
+                    case "false" -> tokens.add(new Token(Token.FALSE, "", line));
+                    case "break" -> tokens.add(new Token(Token.BREAK, "", line));
+                    case "continue" -> tokens.add(new Token(Token.CONTINUE, "", line));
+                    default -> tokens.add(new Token('d', s, line));
+                }
+                k = k1;
+            }
+            else throw new LexicalError("Lexical error in line " + line + ".");
         }
 
         tokens.add(new Token(-100, "", -100)); // $
