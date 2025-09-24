@@ -54,14 +54,11 @@ public class Lexer {
         int k = 0;
         while (k < sourceCode.length()) {
             if (sourceCode.charAt(k) == ' ' || sourceCode.charAt(k) == '\t'
-                    || sourceCode.charAt(k) == '\r') {
+                    || sourceCode.charAt(k) == '\r')
                 ++k;
-                continue;
-            }
             else if (sourceCode.charAt(k) == '\n') {
                 ++k;
                 ++line;
-                continue;
             }
             else if (sourceCode.charAt(k) == ';' || sourceCode.charAt(k) == '('
                     || sourceCode.charAt(k) == ')' || sourceCode.charAt(k) == '['
@@ -189,3 +186,4 @@ public class Lexer {
 
     public List<Token> getTokens() { return tokens; }
 }
+
